@@ -106,50 +106,6 @@ class TestSolver(unittest.TestCase):
         validMoveCount = len(solver._getValidMoves([2, 2, 0]))
         self.assertEqual(32, validMoveCount)
 
-    # def testExpectedValidMovesAreReturnedForZeroUnit(self):
-    #     solver = Solver()
-    #     expectedValidMoves = [
-    #         [[0, 0, 0], [1, 0, 0], [2, 0, 0], [1, -1, 0]],  # x_|_
-    #         [[0, 0, 0], [0, -1, 0], [0, -2, 0], [-1, -1, 0]],  # -|
-    #         # x
-    #         [[0, 0, 0], [-1, 0, 0], [-2, 0, 0], [-1, 1, 0]],  # Tx
-    #         [[0, 0, 0], [0, 1, 0], [0, 2, 0], [1, 1, 0]],  # x
-    #         # |-
-    #         [[0, 0, 0], [1, 0, 0], [2, 0, 0], [1, 1, 0]],  # XT
-    #         [[0, 0, 0], [0, -1, 0], [0, -2, 0], [1, -1, 0]],  # |-
-    #         # x
-    #         [[0, 0, 0], [-1, 0, 0], [-2, 0, 0], [-1, -1, 0]],  # _|_x
-    #         # x
-    #         [[0, 0, 0], [0, 1, 0], [0, 2, 0], [-1, 1, 0]],  # -|
-    #         [[0, 0, 0], [1, 0, 0], [2, 0, 0], [1, 0, 1]],  # x---
-    #         [[0, 0, 0], [0, -1, 0], [0, -2, 0], [0, -1, 1]],  # |
-    #         # x
-    #         [[0, 0, 0], [-1, 0, 0], [-2, 0, 0], [-1, 0, 1]],  # ---x
-    #         [[0, 0, 0], [0, 1, 0], [0, 2, 0], [0, 1, 1]],  # x
-    #         # |
-    #         [[0, 0, 0], [1, 0, 0], [2, 0, 0], [1, 0, -1]],  # x---
-    #         [[0, 0, 0], [0, -1, 0], [0, -2, 0], [0, -1, -1]],  # |
-    #         # x
-    #         [[0, 0, 0], [-1, 0, 0], [-2, 0, 0], [-1, 0, -1]],  # ---x
-    #         [[0, 0, 0], [0, 1, 0], [0, 2, 0], [0, 1, -1]],  # x
-    #         # |
-    #         [[0, 0, 0], [0, -1, -1], [0, 0, -1], [0, 1, -1]],  # |
-    #         # x
-    #         # |
-    #         [[0, 0, 0], [0, -1, 1], [0, 0, 1], [0, 1, 1]],  # |
-    #         # |X (Tetrino is |- but is rotated 90 degrees left)
-    #         # |
-    #         [[0, 0, 0], [-1, 0, -1], [1, 0, -1], [0, 0, -1]],  # -x-
-    #         [[0, 0, 0], [-1, 0, 1], [1, 0, 1], [0, 0, 1]],
-    #         # --- (Tetrino is _|_ but rotated 90 degrees away (into the page))
-    #         #  x
-    #         [[0, 0, 0], [0, -1, 0], [0, 1, 0], [0, 0, 1]]
-    #
-    #
-    #     ]
-    #     actualValidMoves = solver._getValidMoves([0, 0, 0])
-    #     self.assertEqual(expectedValidMoves, actualValidMoves)
-
     def testExpectedValidMovesAreReturnedForZeroUnitValid(self):
         solver = Solver()
         expectedValidMoves = [
@@ -160,77 +116,9 @@ class TestSolver(unittest.TestCase):
         actualValidMoves = solver.getValidMoves([0, 0, 0])
         self.assertEqual(expectedValidMoves, actualValidMoves)
 
-    # def testMoreExpectedValidMoves(self):
-    #     solver = Solver()
-    #     expectedValidMoves = [
-    #                           [[5, 1, 1], [4, 1, 1], [3, 1, 1], [4, 2, 1]],
-    #                           [[5, 1, 1], [4, 1, 1], [3, 1, 1], [4, 0, 1]],
-    #                           [[5, 1, 1], [5, 2, 1], [5, 3, 1], [4, 2, 1]],
-    #                           [[5, 1, 1], [4, 1, 1], [3, 1, 1], [4, 1, 0]],
-    #                           [[5, 1, 1], [5, 2, 1], [5, 3, 1], [5, 2, 0]],
-    #                           [[5, 1, 1], [5, 0, 0], [5, 1, 0], [5, 2, 0]]]
-    #     actualValidMoves = solver.getValidMoves([5,1,1])
-    #     print(actualValidMoves)
-    #     self.assertEqual(expectedValidMoves, actualValidMoves)
-
-    # def testExpectedValidMovesWorkWithNewX(self):
-    #     solver = Solver()
-    #     expectedValidMoves = [
-    #         [[1, 0, 0], [1, 1, 0], [1, 2, 0], [2, 1, 0]],  # x
-    #                                                        # |-
-    #         [[1, 0, 0], [2, 0, 0], [3, 0, 0], [2, 1, 0]],  # XT
-    #         [[1, 0, 0], [1, 1, 0], [1, 2, 0], [0, 1, 0]],  # #
-    #                                                        # -|
-    #         [[1, 0, 0], [2, 0, 0], [3, 0, 0], [2, 0, 1]],  # x---
-    #         [[1, 0, 0], [1, 1, 0], [1, 2, 0], [1, 1, 1]],  # x
-    #                                                        # |
-    #         [[1, 0, 0], [0, 0, 1], [2, 0, 1], [1, 0, 1]]  # -X-
-    #
-    #     ]
-    #     actualValidMoves = solver.getValidMoves([1, 0, 0])
-    #     self.assertEqual(expectedValidMoves, actualValidMoves)
-
-    # def testExpectedValidMovesWorkWithNewXNewY(self):
-    #     solver = Solver()
-    #     expectedValidMoves = [
-    #         [[1, 1, 0], [2, 1, 0], [3, 1, 0], [2, 0, 0]],  # x_|_
-    #         [[1, 1, 0], [1, 2, 0], [1, 3, 0], [2, 2, 0]],  # x
-    #         # |-
-    #         [[1, 1, 0], [2, 1, 0], [3, 1, 0], [2, 2, 0]],  # XT
-    #         [[1, 1, 0], [1, 2, 0], [1, 3, 0], [0, 2, 0]],  # #
-    #         # -|
-    #         [[1, 1, 0], [2, 1, 0], [3, 1, 0], [2, 1, 1]],  # x---
-    #         [[1, 1, 0], [1, 2, 0], [1, 3, 0], [1, 2, 1]],  # x
-    #         # |
-    #         [[1, 1, 0], [1, 0, 1], [1, 1, 1], [1, 2, 1]],
-    #         [[1, 1, 0], [0, 1, 1], [2, 1, 1], [1, 1, 1]],
-    #         [[1, 1, 0], [1, 0, 0], [1, 2, 0], [1, 1, 1]]
-    #
-    #     ]
-    #     actualValidMoves = solver.getValidMoves([1, 1, 0])
-    #     self.assertEqual(expectedValidMoves, actualValidMoves)
-
-    # def testExpectedValidMovesWorkWithNewXNewYNewZ(self):
-    #     solver = Solver()
-    #     expectedValidMoves = [
-    #         [[1, 1, 1], [2, 1, 1], [3, 1, 1], [2, 0, 1]],  # x_|_
-    #         [[1, 1, 1], [1, 2, 1], [1, 3, 1], [2, 2, 1]],  # x
-    #         # |-
-    #         [[1, 1, 1], [2, 1, 1], [3, 1, 1], [2, 2, 1]],  # XT
-    #         [[1, 1, 1], [1, 2, 1], [1, 3, 1], [0, 2, 1]],  # #
-    #         # -|
-    #         [[1, 1, 1], [2, 1, 1], [3, 1, 1], [2, 1, 0]],  # x---
-    #         [[1, 1, 1], [1, 2, 1], [1, 3, 1], [1, 2, 0]],  # x
-    #         # |
-    #         [[1, 1, 1], [1, 0, 0], [1, 1, 0], [1, 2, 0]],
-    #         [[1, 1, 1], [0, 1, 0], [2, 1, 0], [1, 1, 0]]
-    #     ]
-    #     actualValidMoves = solver.getValidMoves([1, 1, 1])
-    #     self.assertEqual(expectedValidMoves, actualValidMoves)
-
     def testPlaceRandomlySituatedPieceAtZero(self):
         solver = Solver()
-        expectedL = [  # negatives signify that we care that they are simply not zero
+        expectedL = [
             [1, 1, 1, 0, 0, 0],
             [0, 0, 0, 0, 0, 0],
             [0, 0, 0, 0, 0, 0],
@@ -285,46 +173,46 @@ class TestSolver(unittest.TestCase):
     def testGetAllZerosAroundAPiece(self):
         solver = Solver()
         # solver.l = 	[[1,1,1,0,0,0],
-        # 	[3,3,3,0,0,0],
-        # 	[0,3,0,0,0,0],
-        # 	[0,0,0,0,0,0],
-        # 	[0,0,0,0,0,0],
-        # 	[0,0,0,0,0,0]
+        # 	             [3,3,3,0,0,0],
+        # 	             [0,3,0,0,0,0],
+        # 	             [0,0,0,0,0,0],
+        # 	             [0,0,0,0,0,0],
+        # 	             [0,0,0,0,0,0]
         # ]
         # solver.m = 	[[2,1,0,0,0,0],
-        # 	[2,2,0,0,0,0],
-        # 	[2,0,0,0,0,0],
-        # 	[0,0,0,0,0,0],
-        # 	[0,0,0,0,0,0],
-        # 	[0,0,0,0,0,0]
+        # 	             [2,2,0,0,0,0],
+        # 	             [2,0,0,0,0,0],
+        # 	             [0,0,0,0,0,0],
+        # 	             [0,0,0,0,0,0],
+        # 	             [0,0,0,0,0,0]
         # ]
         solver.place([0, 0, 0], [1, 0, 0], [2, 0, 0], [1, 0, 1])
         solver.place([0, 0, 1], [0, 1, 1], [0, 2, 1], [1, 1, 1])
         solver.place([0, 1, 0], [1, 1, 0], [2, 1, 0], [2, 1, 0])
-        # TODO I have to actually call place for these pieces or this won't work.
+        
         actualZeros = solver.getAllZerosForPiece(1)
         self.assertEqual([[3, 0, 0], [2, 0, 1]], actualZeros)
 
     def testGetAllZerosAroundADifferentPiece(self):
         solver = Solver()
         # solver.l = 	[[1,1,1,0,0,0],
-        # 	[3,3,3,0,0,0],
-        # 	[0,3,0,0,0,0],
-        # 	[0,0,0,0,0,0],
-        # 	[0,0,0,0,0,0],
-        # 	[0,0,0,0,0,0]
+        # 	             [3,3,3,0,0,0],
+        # 	             [0,3,0,0,0,0],
+        #  	             [0,0,0,0,0,0],
+        # 	             [0,0,0,0,0,0],
+        #                [0,0,0,0,0,0]
         # ]
         # solver.m = 	[[2,1,0,0,0,0],
-        # 	[2,2,0,0,0,0],
-        # 	[2,0,0,0,0,0],
-        # 	[0,0,0,0,0,0],
-        # 	[0,0,0,0,0,0],
-        # 	[0,0,0,0,0,0]
+        # 	             [2,2,0,0,0,0],
+        # 	             [2,0,0,0,0,0],
+        # 	             [0,0,0,0,0,0],
+        # 	             [0,0,0,0,0,0],
+        # 	             [0,0,0,0,0,0]
         # ]
         solver.place([0, 0, 0], [1, 0, 0], [2, 0, 0], [1, 0, 1])
         solver.place([0, 0, 1], [0, 1, 1], [0, 2, 1], [1, 1, 1])
         solver.place([0, 1, 0], [1, 1, 0], [2, 1, 0], [2, 1, 0])
-        # TODO I have to actually call place for these pieces or this won't work.
+        
         actualZeros = solver.getAllZerosForPiece(2)
         self.assertEqual([[1, 2, 1], [0, 2, 0], [2, 1, 1], [0, 3, 1]], actualZeros)
 
