@@ -28,6 +28,9 @@ class Solver:
         self.currentZeroIndex = [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]
         self.currentPieceIndex = [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]
 
+        self.solution = []
+        self.thisIsSolved = False
+
 
     def reset(self):
         self.l = [
@@ -433,6 +436,198 @@ class Solver:
                     self.currentPieceIndex[currentPiece] = 0
                 self.unplaceLatestPiece()
             currentPiece = len(self.coordlist)
+
+    def getPossibleMovesFor(self, piece):
+        """
+        piece 0
+          3
+        0 1 2
+
+         piece 1
+          2
+         31
+          0
+
+         piece 2
+          2
+          13
+          0
+
+         piece 3
+           2 1 0
+             3
+
+         piece 4
+            2
+            1
+            0
+
+         piece 5
+          0 1 2
+
+         piece 6
+          2 3 0
+
+         piece 7
+          2
+          3
+          0
+        """
+        toReturn = []
+        for i in range(0, 72):
+            if piece == 0:
+                if (8+i) < 72:
+                    if not ((8+i) % 6 == 0):
+                        if not ((1 + i) % 6 == 0):
+                           toReturn.append([1+i, 6+i, 7+i, 8+i])
+            if piece == 1:
+                if (13 + i) < 72:
+                    if not ((1 + i) % 6 == 0):
+                        if ((1 + i) > 0):
+                            toReturn.append([1 + i, 6 + i, 7 + i, 13 + i])
+            if piece == 2:
+                if (13 + i) < 72:
+                    if not ((7 + i) % 6 == 0):
+                        toReturn.append([0 + i, 6 + i, 7 + i, 12 + i])
+            if piece == 3:
+                if (7 + i) < 72:
+                    if not ((2 + i) % 6 == 0):
+                        if not((1 + i) % 6 == 0):
+                            toReturn.append([0 + i, 1 + i, 2 + i, 7 + i])
+            if piece == 4:
+                if (12 + i) < 36:
+                    toReturn.append([0 + i, 6 + i, 12 + i, 42 + i])
+            if piece == 5:
+                if (2 + i) < 36:
+                    if not ((2 + i) % 6 == 0):
+                        if not ((1 + i) % 6 == 0):
+                            toReturn.append([0 + i, 1 + i, 2 + i, 37 + i])
+            if piece == 6:
+                if (38 + i) < 72:
+                    if not ((38 + i) % 6 == 0):
+                        if not ((37 + i) % 6 == 0):
+                            toReturn.append([36 + i, 37 + i, 38 + i, 1 + i])
+            if piece == 7:
+                if (48 + i) < 72:
+                    toReturn.append([36 + i, 42 + i, 48 + i, 6 + i])
+        return toReturn
+
+    def appendConstraints(self, numberOfPieceConstraints, numberOfPiece):
+        toReturn = []
+        for i in range(0, numberOfPieceConstraints):
+            toReturn.append(0)
+        toReturn[numberOfPiece] = 1
+        return toReturn
+
+    def createValidPieceAlgorithmRow(self, piecePosition):
+        toReturn = []
+        for i in range(0, 72):
+            toReturn.append(0)
+        for eachPosition in piecePosition:
+            toReturn[eachPosition] = 1
+        return toReturn
+
+    def rowCreate(self, piecePosition, numberOfConstraintPieces, numberOfPiece):
+        return self.createValidPieceAlgorithmRow(piecePosition) + self.appendConstraints(numberOfConstraintPieces, numberOfPiece)
+
+    def getAlgorithmXMatrix(self, pieces):
+        matrix = [[0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 50, 51, 52, 53, 54, 55, 56, 57, 58, 59, 60, 61, 62, 63, 64, 65, 66, 67, 68, 69, 70, 71, 72, 73, 74, 75, 76, 77, 78, 79, 80, 81, 82, 83, 84, 85, 86, 87, 88, 89]]
+        for i, eachPiece in enumerate(pieces):
+            for eachValidPlacement in self.getPossibleMovesFor(eachPiece):
+                matrix.append(self.rowCreate(eachValidPlacement, len(pieces), i))
+        return matrix
+
+    def removeAppropriateRowsAndColumns(self, matrix, chosenRow):
+        newMatrix = [matrix[0]]
+        columnsToRemove = set()
+        for columnIndex, eachValue in enumerate(chosenRow):
+            if eachValue == 1:
+                columnsToRemove.add(matrix[0][columnIndex])
+        for matrixRowNumber, eachRow in enumerate(matrix):
+            if matrixRowNumber > 0:
+                addRow = True
+                for i, eachValue in enumerate(chosenRow):
+                    if eachValue == 1:
+                        if eachRow[i] == 1:
+                            addRow = False
+                            break
+                if addRow:
+                    newMatrix.append(eachRow)
+        #remove columns
+        matrixToReturn = []
+        listOfColumnsToRemove = list(columnsToRemove)
+        listOfColumnsToRemove = sorted(listOfColumnsToRemove)
+        listOfColumnsToRemove = listOfColumnsToRemove[::-1]
+        for rowsInNewMatrix in newMatrix:
+            newRow = rowsInNewMatrix.copy()
+            for eachColumnIndexToRemove in listOfColumnsToRemove:
+                newRow.pop(matrix[0].index(eachColumnIndexToRemove))
+            matrixToReturn.append(newRow)
+
+        return matrixToReturn
+
+    def getColumn(self, matrix, columnIndex):
+        toReturn = []
+        for eachRow in matrix:
+            toReturn.append(eachRow[columnIndex])
+        return toReturn
+
+    def listOfRowIndexesContainingAOneInTheLeftmostColumnWithTheFewestOnes(self, matrix):
+        """
+        return a list of row indexes of a given matrix that happen to contain a one in the column
+        which contains the fewest ones and is leftmost.
+        """
+        toReturn = []
+        sumOfEachColumnList = []
+        minSum = 9999999999 #ugh shitty max sum...
+        indexOfColumnWithLeftmostMinSum = -1
+        for i in range(0, len(matrix[0])):
+            eachColumn = self.getColumn(matrix, i)
+            sumOfEachColumn = sum(eachColumn[1:])
+            if sumOfEachColumn < minSum:
+                minSum = sumOfEachColumn
+            sumOfEachColumnList.append(sumOfEachColumn)
+        for index, eachSum in enumerate(sumOfEachColumnList):
+            if eachSum == minSum:
+                indexOfColumnWithLeftmostMinSum = index
+                break
+        for rowIndex, eachRow in enumerate(matrix):
+            if rowIndex > 0:
+                if eachRow[indexOfColumnWithLeftmostMinSum] == 1:
+                    toReturn.append(rowIndex)
+        return toReturn
+
+    def shouldBacktrack(self, matrix):
+        for i in range(0, len(matrix[0])):
+            eachColumn = self.getColumn(matrix, i)
+            if sum(eachColumn[1:]) == 0:
+                return True
+                break
+        return False
+
+    def getBetterWayOfReturningRow(self, chosenRow, header):
+        toReturn = []
+        for indexInRow, eachItem in enumerate(chosenRow):
+            if eachItem == 1:
+                toReturn.append(header[indexInRow])
+        return toReturn
+
+    def recurse(self, matrix):
+        if matrix == [[]]:
+            self.thisIsSolved = True
+            return self.solution
+        else:
+            listOfRowsToTry = self.listOfRowIndexesContainingAOneInTheLeftmostColumnWithTheFewestOnes(matrix)
+            for eachRow in listOfRowsToTry:
+                chosenRow = self.getBetterWayOfReturningRow(matrix[eachRow], matrix[0])
+                self.solution.append(chosenRow)
+                newMatrix = self.removeAppropriateRowsAndColumns(matrix, matrix[eachRow])
+                if newMatrix and not self.shouldBacktrack(newMatrix):
+                    self.recurse(newMatrix)
+                if self.thisIsSolved:
+                    break
+                if not self.thisIsSolved:
+                    self.solution.remove(chosenRow)
         
 
 
